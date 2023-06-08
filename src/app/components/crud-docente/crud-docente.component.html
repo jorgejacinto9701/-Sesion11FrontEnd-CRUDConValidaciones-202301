@@ -83,18 +83,34 @@
                 </div>
                 
                 <div class="modal-body">
-                    <form class="content" >
+                    <form class="content" [formGroup]="formsRegistra" >
                         <div class="submit-form">
                             
                                 <div  class="row">
                                     <div class="col-lg-10">
                                         <label for="id_reg_nombre">Nombre</label>
-                                        <input type="text"  [(ngModel)]="docente.nombre" placeholder="Ingrese el nombre" class="form-control" name="nombre" id="id_reg_nombre" />
+                                        <input type="text"  [(ngModel)]="docente.nombre" formControlName="validaNombre" placeholder="Ingrese el nombre" class="form-control" name="nombre" id="id_reg_nombre" />
+                                        <div *ngIf="formsRegistra.controls.validaNombre.touched" class="invalid" style="color:red" >
+                                            <span *ngIf="formsRegistra.controls.validaNombre.hasError('required')">
+                                                El Nombre es requerido
+                                              </span>
+                                              <span *ngIf="formsRegistra.controls.validaNombre.hasError('pattern')">
+                                                El Nombre es 3 a 30 caracteres
+                                              </span>                                                       
+                                        </div>
                                     </div>
                                     
                                     <div class="col-lg-2">
                                         <label for="id_reg_dni">DNI</label>
-                                        <input  [(ngModel)]="docente.dni" type="text" placeholder="Ingrese DNI" class="form-control" name="dni" id="id_reg_dni"  maxlength="8"/>
+                                        <input  [(ngModel)]="docente.dni" type="text" formControlName="validaDni" placeholder="Ingrese DNI" class="form-control" name="dni" id="id_reg_dni"  maxlength="8"/>
+                                        <div *ngIf="formsRegistra.controls.validaDni.touched" class="invalid" style="color:red" >
+                                            <span *ngIf="formsRegistra.controls.validaDni.hasError('required')">
+                                                El DNI es requerido
+                                              </span>
+                                              <span *ngIf="formsRegistra.controls.validaDni.hasError('pattern')">
+                                                El DNI tiene 8 dígitos
+                                              </span>                                                       
+                                        </div>
                                     </div>
                                 </div>
 
@@ -103,32 +119,47 @@
                                     
                                     <div class="col-lg-4">
                                         <label for="id_reg_departamento">Departamento</label>
-                                        <select [(ngModel)]="docente.ubigeo!.departamento" (change)="cargaProvincia()"   id="id_reg_departamento" name="departamento" class="form-control">
+                                        <select [(ngModel)]="docente.ubigeo!.departamento" formControlName="validaDepartamento" (change)="cargaProvincia()"   id="id_reg_departamento" name="departamento" class="form-control">
                                             <option value="-1"> [Seleccione] </option>
                                             <option *ngFor="let aux of departamentos" value="{{ aux }}"> 
                                                         {{ aux }}
                                             </option>
                                         </select>
+                                        <div *ngIf="formsRegistra.controls.validaDepartamento.touched" class="invalid" style="color:red" >
+                                              <span *ngIf="formsRegistra.controls.validaDepartamento.hasError('min')">
+                                                El departamento es requerido
+                                              </span>                                                       
+                                        </div>
                                     </div>
 
                                     <div class="col-lg-4">
                                         <label  for="id_reg_provincia">Provincia</label>
-                                        <select  [(ngModel)]="docente.ubigeo!.provincia" (change)="cargaDistrito()"   id="id_reg_provincia" name="provincia" class="form-control" >
+                                        <select  [(ngModel)]="docente.ubigeo!.provincia" formControlName="validaProvincia"  (change)="cargaDistrito()"   id="id_reg_provincia" name="provincia" class="form-control" >
                                             <option value="-1"> [Seleccione] </option>
                                              <option *ngFor="let aux of  provincias" value="{{ aux }}"> 
                                                         {{ aux }}
                                              </option>
                                         </select>
+                                        <div *ngIf="formsRegistra.controls.validaProvincia.touched" class="invalid" style="color:red" >
+                                            <span *ngIf="formsRegistra.controls.validaProvincia.hasError('min')">
+                                              La provincia es requerida
+                                            </span>                                                       
+                                      </div>
                                     </div>
 
                                     <div class="col-lg-4">
                                         <label for="id_reg_distrito">Distrito</label>
-                                        <select [(ngModel)]="docente.ubigeo!.idUbigeo"  id="id_reg_distrito" name="distrito" class="form-control">
+                                        <select [(ngModel)]="docente.ubigeo!.idUbigeo"  formControlName="validaDistrito" id="id_reg_distrito" name="distrito" class="form-control">
                                             <option value="-1"> [Seleccione] </option>
                                             <option *ngFor="let aux of  distritos" value="{{ aux.idUbigeo }}"> 
                                                 {{ aux.distrito }}
                                              </option>
                                         </select>
+                                        <div *ngIf="formsRegistra.controls.validaDistrito.touched" class="invalid" style="color:red" >
+                                            <span *ngIf="formsRegistra.controls.validaDistrito.hasError('min')">
+                                              El distrito es requerido
+                                            </span>                                                       
+                                      </div>
                                     </div>
                                 
                                 
@@ -137,11 +168,11 @@
 
                         </div> 
                         <div class="modal-footer">
-                            <button type="reset" class="btn btn-secondary btn-sm" style="width: 100px;">Limpiar</button>
+                            <button type="reset" id="id_reg_limpiar" class="btn btn-secondary btn-sm"  style="width: 100px;">Limpiar</button>
                             <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" id="btn_reg_cerrar" style="width: 100px;">Cerrar</button>
                             <div class="form-group text-center">
                                 <div class="col-lg-12">
-                                    <button  id="id_reg_registra"  (click)="registra()"   class="btn btn-success btn-sm "style="width: 100px;">Registrar</button>
+                                    <button  id="id_reg_registra"  (click)="registra()"  [disabled]="formsRegistra.invalid"   class="btn btn-success btn-sm "style="width: 100px;">Registrar</button>
                                 </div>
                             </div>
                         </div>
@@ -167,27 +198,48 @@
                 </div>
                 <div class="modal-body">
 
-                    <form class="content" >
+                    <form class="content"   [formGroup]="formsActualiza">
                         <div class="submit-form">
 
                             <div  class="row">
                                 <div class="col-lg-8">
                                     <label for="id_act_nombre">Nombre</label>
-                                    <input type="text" [(ngModel)]="docente.nombre" placeholder="Ingrese el nombre" class="form-control" name="nombre" id="id_act_nombre" />
+                                    <input type="text" [(ngModel)]="docente.nombre" formControlName="validaNombre"  placeholder="Ingrese el nombre" class="form-control" name="nombre" id="id_act_nombre" />
+                                    <div *ngIf="formsActualiza.controls.validaNombre.touched" class="invalid" style="color:red" >
+                                        <span *ngIf="formsActualiza.controls.validaNombre.hasError('required')">
+                                            El Nombre es requerido
+                                          </span>
+                                          <span *ngIf="formsActualiza.controls.validaNombre.hasError('pattern')">
+                                            El Nombre es 3 a 30 caracteres
+                                          </span>                                                       
+                                    </div>
                                 </div>
     
                                 <div class="col-lg-2">
                                     <label for="id_act_estado">Estado</label>
-                                    <select id="id_act_estado" [(ngModel)]="docente.estado"  name="estado" class="form-control">
+                                    <select id="id_act_estado" [(ngModel)]="docente.estado" formControlName="validaEstado"  name="estado" class="form-control">
                                         <option value="-1"> [Seleccione] </option>
                                         <option value="1"> Activo </option>
                                         <option value="0"> Inactivo </option>
                                     </select>
+                                    <div *ngIf="formsActualiza.controls.validaEstado.touched" class="invalid" style="color:red" >
+                                        <span *ngIf="formsActualiza.controls.validaEstado.hasError('min')">
+                                          El estado es requerido
+                                        </span>                                                       
+                                  </div>
                                 </div>
 
                                 <div class="col-lg-2">
                                     <label for="id_act_dni">DNI</label>
-                                    <input type="text" [(ngModel)]="docente.dni"  placeholder="Ingrese DNI" class="form-control" name="dni" id="id_act_dni"  maxlength="8"/>
+                                    <input type="text" [(ngModel)]="docente.dni"  formControlName="validaDni" placeholder="Ingrese DNI" class="form-control" name="dni" id="id_act_dni"  maxlength="8"/>
+                                    <div *ngIf="formsActualiza.controls.validaDni.touched" class="invalid" style="color:red" >
+                                        <span *ngIf="formsActualiza.controls.validaDni.hasError('required')">
+                                            El DNI es requerido
+                                          </span>
+                                          <span *ngIf="formsActualiza.controls.validaDni.hasError('pattern')">
+                                            El DNI tiene 8 dígitos
+                                          </span>                                                       
+                                    </div>
                                 </div>
                             </div>
     
@@ -195,32 +247,47 @@
                             <div class="row" style="margin-top: 5%">
                                 <div class="col-lg-4">
                                     <label for="id_act_departamento">Departamento</label>
-                                    <select [(ngModel)] = "docente.ubigeo!.departamento" (change)= "cargaProvincia()"  id="id_act_departamento" name="departamento" class="form-control">
+                                    <select [(ngModel)] = "docente.ubigeo!.departamento" formControlName="validaDepartamento"  (change)= "cargaProvincia()"  id="id_act_departamento" name="departamento" class="form-control">
                                         <option value="-1"> [Seleccione] </option>
                                         <option *ngFor="let aux of departamentos" value="{{ aux }}">
                                             {{ aux }}
                                         </option> 
                                     </select>
+                                    <div *ngIf="formsActualiza.controls.validaDepartamento.touched" class="invalid" style="color:red" >
+                                        <span *ngIf="formsActualiza.controls.validaDepartamento.hasError('min')">
+                                          El departamento es requerido
+                                        </span>                                                       
+                                  </div>
                                 </div>
     
                                 <div class="col-lg-4">
                                     <label for="id_act_provincia">Provincia</label>
-                                    <select [(ngModel)] = "docente.ubigeo!.provincia" (change)= "cargaDistrito()"  id="id_act_provincia" name="provincia" class="form-control" >
+                                    <select [(ngModel)] = "docente.ubigeo!.provincia" formControlName="validaProvincia" (change)= "cargaDistrito()"  id="id_act_provincia" name="provincia" class="form-control" >
                                         <option value="-1"> [Seleccione] </option>
                                         <option *ngFor="let aux of provincias" value="{{ aux }}">
                                             {{ aux }}
                                         </option>   
                                     </select>
+                                    <div *ngIf="formsActualiza.controls.validaProvincia.touched" class="invalid" style="color:red" >
+                                        <span *ngIf="formsActualiza.controls.validaProvincia.hasError('min')">
+                                          La provincia es requerida
+                                        </span>                                                       
+                                  </div>
                                 </div>
     
                                 <div class="col-lg-4">
                                     <label for="id_act_distrito">Distrito</label>
-                                    <select [(ngModel)] = "docente.ubigeo!.idUbigeo" id="id_act_distrito" name="distrito" class="form-control">
+                                    <select [(ngModel)] = "docente.ubigeo!.idUbigeo" id="id_act_distrito" formControlName="validaDistrito" name="distrito" class="form-control">
                                         <option value="-1"> [Seleccione] </option>
                                         <option *ngFor="let aux of distritos"    value="{{ aux.idUbigeo }}">
                                             {{ aux.distrito }}
                                         </option> 
                                     </select>
+                                    <div *ngIf="formsActualiza.controls.validaDistrito.touched" class="invalid" style="color:red" >
+                                        <span *ngIf="formsActualiza.controls.validaDistrito.hasError('min')">
+                                          El distrito es requerido
+                                        </span>                                                       
+                                  </div>
                                 </div>
                             </div> 
 
@@ -233,7 +300,7 @@
                             <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" id="btn_act_cerrar" style="width: 100px;">Cerrar</button>
                             <div class="form-group text-center">
                                 <div class="col-lg-12">
-                                    <button id="id_act_actualiza"   (click)="actualiza()" class="btn btn-success btn-sm" style="width: 100px">Actualizar</button>
+                                    <button id="id_act_actualiza"   (click)="actualiza()" [disabled]="formsActualiza.invalid"  class="btn btn-success btn-sm" style="width: 100px">Actualizar</button>
                                 </div>
                             </div>
                         </div>

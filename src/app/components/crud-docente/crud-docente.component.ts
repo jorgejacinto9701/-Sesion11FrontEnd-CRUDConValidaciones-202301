@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Docente } from 'src/app/models/docente.model';
 import { Ubigeo } from 'src/app/models/ubigeo.model';
 import { DocenteService } from 'src/app/services/docente.service';
@@ -36,11 +37,29 @@ export class CrudDocenteComponent implements OnInit {
     }
   };
 
-  constructor(private docenteService:DocenteService, private ubigeoService:UbigeoService) {
-    this.ubigeoService.listarDepartamento().subscribe(
-        response => this.departamentos = response
-    );            
-}
+
+  formsRegistra = this.formBuilder.group({
+    validaNombre: ['', [Validators.required, Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚñ0-9 ]{3,30}')]],
+    validaDni: ['', [Validators.required,Validators.pattern('[0-9]{8}')]],
+    validaDepartamento: ['', [Validators.min(1)]],
+    validaProvincia: ['', [Validators.min(1)]],
+    validaDistrito: ['', [Validators.min(1)]]
+  });
+
+  formsActualiza = this.formBuilder.group({
+    validaNombre: ['', [Validators.required, Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚñ0-9 ]{3,30}')]],
+    validaDni: ['', [Validators.required,Validators.pattern('[0-9]{8}')]],
+    validaDepartamento: ['', [Validators.min(1)]],
+    validaProvincia: ['', [Validators.min(1)]],
+    validaDistrito: ['', [Validators.min(1)]],
+    validaEstado: ['', [Validators.min(0)]],
+  });
+
+  constructor(private formBuilder: FormBuilder,private docenteService:DocenteService, private ubigeoService:UbigeoService) {
+      this.ubigeoService.listarDepartamento().subscribe(
+          response => this.departamentos = response
+      );            
+  }
 
   cargaProvincia(){
     this.ubigeoService.listaProvincias(this.docente.ubigeo?.departamento).subscribe(
@@ -73,9 +92,29 @@ cargaDistrito(){
   }
 
   registra(){
-      this.docenteService.inserta(this.docente).subscribe(
-            x =>  Swal.fire('Mensaje', x.mensaje, 'info') 
-      );
+    if (this.formsRegistra.valid){
+        this.docenteService.inserta(this.docente).subscribe(
+              x => { 
+                        document.getElementById("btn_reg_cerrar")?.click();
+                        this.docenteService.consultaPorNombre(this.filtro==""?"todos":this.filtro).subscribe(
+                              x => this.docentes = x
+                        );
+                        Swal.fire('Mensaje', x.mensaje, 'info'); 
+                        this.docente = { 
+                          idDocente:0,
+                          nombre:"",
+                          dni:"",
+                          estado:1,
+                          ubigeo:{
+                            idUbigeo: -1,
+                            departamento:"-1",
+                            provincia:"-1",
+                            distrito:"-1",
+                          }
+                        };
+                    }   
+        );
+        }
   }   
 
   elimina(obj:Docente){
@@ -91,7 +130,12 @@ cargaDistrito(){
           }).then((result) => {
                 if (result.isConfirmed) {
                     this.docenteService.elimina(obj.idDocente || 0).subscribe(
-                          x => Swal.fire('Mensaje', x.mensaje, 'info') 
+                          x => {
+                                this.docenteService.consultaPorNombre(this.filtro==""?"todos":this.filtro).subscribe(
+                                  x => this.docentes = x
+                                );  
+                                Swal.fire('Mensaje', x.mensaje, 'info');
+                          }
                     );
                 }
           })   
@@ -115,8 +159,16 @@ cargaDistrito(){
    }  
 
    actualiza(){
-      this.docenteService.actualiza(this.docente).subscribe(
-            x => Swal.fire('Mensaje', x.mensaje,'info') 
-      );
+    if (this.formsActualiza.valid){
+        this.docenteService.actualiza(this.docente).subscribe(
+              x => { 
+                document.getElementById("btn_act_cerrar")?.click();
+                this.docenteService.consultaPorNombre(this.filtro==""?"todos":this.filtro).subscribe(
+                      x => this.docentes = x
+                );
+                Swal.fire('Mensaje', x.mensaje, 'info'); 
+              }   
+        );
+      }
     }
 }
